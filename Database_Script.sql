@@ -1,3 +1,5 @@
+CREATE DATABASE course_registration;
+
 CREATE TABLE STUDENT
 (Student_ID Int(20),
  Password Int(20),
