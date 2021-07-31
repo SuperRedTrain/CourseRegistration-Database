@@ -33,17 +33,19 @@ if(isset($_POST['submitbutton'])){
         die('Connect error: '. $db->connect_error);
     $db->select_db('course_registration') or die('Can not connect to the database');
         
-        
-    $sql="SELECT * FROM SECTION WHERE Year={$year} AND Semester='{$semester}';";
+ 
+    $sql="SELECT * FROM SECTION,PREREQUISITE WHERE Year={$year} AND Semester='{$semester}' AND SECTION.Course_number=PREREQUISITE.Course_number;";
+
 
     
     $result=$db->query($sql);
     
-    echo '<table border="1"><tr><td>Section_identifier</td><td>Course_number</td><td>Year</td><td>Semester</td><td>Instructor</td><td>Time</td></tr>';
+    echo '<table border="1"><tr><td>Section_identifier</td><td>Prerequisite_Course number</td><td>Course_number</td><td>Year</td><td>Semester</td><td>Instructor</td><td>Time</td></tr>';
     
     while($row = mysqli_fetch_assoc($result)){
              
         echo "<tr><td> {$row['Section_identifier']}</td> ".
+            "<td>{$row['Prerequisite_number']} </td> ".
             "<td>{$row['Course_number']} </td> ".
             "<td>{$row['Year']} </td> ".
             "<td>{$row['Semester']} </td> ".
