@@ -25,8 +25,7 @@ echo "Student ID: {$studentID}"."</br> ";
 if(isset($_POST['submitbutton'])){
 
     $secID = $_POST['sectionID'];
-    echo "ID: {$secID}"."</br> ";
-
+    
     // connect to the database
     $db=@new mysqli('127.0.0.1','root','');
     if ($db->connect_error)
@@ -85,8 +84,10 @@ function dropClass($studentID, $secID, $db)
                             
         $db->query($sqlDrop);
         
+        echo "Dropped Class (section identifier): {$secID}"."</br> ";
+        
     }else{
-        echo "You have not registered for this section!";        
+        echo "You have not registered for this section: {$secID}!";        
     }
         
     
