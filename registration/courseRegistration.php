@@ -73,6 +73,7 @@ function displayRegisteredCourses($studentID,$db)
 
 function registering($studentID, $secID, $db)
 {
+
     $sql="SELECT * FROM REGISTERED WHERE Student_ID={$studentID} AND Section_identifier={$secID};";
         
     $result=$db->query($sql);
@@ -80,11 +81,45 @@ function registering($studentID, $secID, $db)
     $num_courses=$result->num_rows;
     
     if($num_courses==0){
-        $sqlInsert="INSERT INTO registered
+        // Find out PREREQUISITE.Course_number
+ //       $sqlpre="SELECT * FROM SECTION,PREREQUISITE WHERE Section_identifier={$secID} AND SECTION.Course_number=PREREQUISITE.Course_number;";        
+ //       $preresult=$db->query($sqlpre);       
+        
+        // Find out Course_numbers that the student got grades
+//        $sqlpreGrade="SELECT * FROM GRADE,SECTION
+//                    WHERE Student_ID={$studentID} AND Grade.Section_identifier=SECTION.Section_identifier;";        
+//       $preresultGrade=$db->query($sqlpreGrade);        
+
+        
+ //       $sqlpre="SELECT * FROM GRADE,SECTION
+ //                   WHERE Student_ID={$studentID} AND Grade.Section_identifier=SECTION.Section_identifier
+ //                   AND SECTION.Course_number={ SELECT PREREQUISITE.Prerequisite_number
+ //                                               FROM PREREQUISITE,SECTION
+ //                                               WHERE Section_identifier={$secID} AND SECTION.Course_number=PREREQUISITE.Course_number};";
+
+       
+        
+        
+        $sqlpre="SELECT *
+                    FROM (SELECT Prerequisite_number as CourseNum  FROM SECTION,PREREQUISITE WHERE Section_identifier={$secID} AND SECTION.Course_number=PREREQUISITE.Course_number) A
+                    LEFT JOIN (SELECT Course_number as CourseNum FROM GRADE,SECTION WHERE Student_ID={$studentID} AND Grade.Section_identifier=SECTION.Section_identifier) B 
+                    ON A.CourseNum=B.CourseNum
+                    WHERE B.CourseNum IS NULL;";
+        $preresult=$db->query($sqlpre); 
+        
+        $precourses=$preresult->num_rows;
+        
+        if($precourses== 0){
+            
+            $sqlInsert="INSERT INTO registered
                     VALUES ({$studentID}, {$secID});";
-        
-        $db->query($sqlInsert);
-        
+            
+            $db->query($sqlInsert);
+            
+        }else{            
+            echo "Prerequisites have not been met!";        
+        }
+                
     }else{
         echo "You have registered for this section!";        
     }
